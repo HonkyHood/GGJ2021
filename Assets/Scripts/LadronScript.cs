@@ -7,6 +7,7 @@ public class LadronScript : MonoBehaviour
 {
     public delegate void LadronDelegate(LadronScript s);
     public LadronDelegate onTakenCoins;
+    public LadronDelegate onCoin;
 
     protected NavMeshAgent agent;
     [SerializeField] protected float speed = 5;
@@ -14,6 +15,7 @@ public class LadronScript : MonoBehaviour
     [SerializeField] protected float distanceHear = 10f;
     [SerializeField] protected GameObject exclamation;
     [SerializeField] protected GameObject interrogation;
+    [SerializeField] protected float takeCoinDuration = 1f;
     private List<Monedita> moneditas = new List<Monedita>();
     private int index = 0;
     private bool checking;
@@ -27,6 +29,14 @@ public class LadronScript : MonoBehaviour
         agent.speed = speed;
         moneditas.AddRange(GameObject.FindObjectsOfType<Monedita>());
         GameObject.FindObjectOfType<CuerpoScript>().onChoque += OnChoque;
+    }
+
+    public float Velocity
+    {
+        get
+        {
+            return agent.desiredVelocity.magnitude;
+        }
     }
 
     void OnChoque(CuerpoScript s)
@@ -96,13 +106,15 @@ public class LadronScript : MonoBehaviour
         moneditas.Remove(mon);
         Destroy(mon.gameObject);
         moneditasToTake--;
+        onCoin?.Invoke(this);
         if (moneditasToTake <= 0)
         {
             //GAMEOVER();
             onTakenCoins?.Invoke(this);
             return;
         }
-        MoveToGold();
+        agent.speed = 0;
+        Invoke("MoveToGold", takeCoinDuration);
     }
 
     private void OnDrawGizmos()
@@ -128,6 +140,7 @@ public class LadronScript : MonoBehaviour
 
     void MoveToGold()
     {
+        agent.speed = speed;
         index = Random.Range(0, moneditas.Count);
         agent.SetDestination(moneditas[index].transform.position);
         //state = LadronState.ToGold;

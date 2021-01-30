@@ -25,5 +25,6 @@ public class PerseguidorScript : MonoBehaviour
         Vector3 dir = target.transform.position - transform.position;
         dir.y = .0f;
         transform.position += dir.normalized * Time.deltaTime * speed;
+        transform.LookAt(target.transform);
     }
 }

@@ -19,8 +19,10 @@ public class CuerpoScript : Personaje
     //[SerializeField] private float choqueDelay = 2f;
     [SerializeField] private float debuffRate = 2f;
     [SerializeField] private float choqueSpeed = 1f;
+    [SerializeField] private float choqueDuration = 0.5f;
     private float choqueCur=0f;
     private float choqueMax=100f;
+    private bool chocando;
     private bool hurted = false;
     private bool debuffing;
 
@@ -87,7 +89,9 @@ public class CuerpoScript : Personaje
         Instantiate(particlesPrefab, hit != null ? hit.point : transform.position, Quaternion.identity);
         choqueCur += dmg;
         hurted = true;
+        chocando = true;
         Invoke("HurtBack", hurtDuration);
+        Invoke("ChoqueEnd", choqueDuration);
         onChoque?.Invoke(this);
         if (choqueCur >= 100)
         {
@@ -96,7 +100,10 @@ public class CuerpoScript : Personaje
         }
     }
 
-
+    void ChoqueEnd()
+    {
+        chocando = false;
+    }
 
     public void TakeDamage (float dmg, ControllerColliderHit hit=null)
     {
@@ -120,7 +127,7 @@ public class CuerpoScript : Personaje
 
     override protected void CustomUpdate()
     {
-        speed = debuffing ? choqueSpeed : defSpeed;
+        speed = chocando ? 0 : debuffing ? choqueSpeed : defSpeed;
         if (debuffing)
         {
             choqueCur -= Time.deltaTime * debuffRate;
