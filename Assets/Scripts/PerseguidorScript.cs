@@ -20,6 +20,10 @@ public class PerseguidorScript : MonoBehaviour
 
     private void Update()
     {
-        agent.SetDestination(target.transform.position);
+        if (target == null)
+            return;
+        Vector3 dir = target.transform.position - transform.position;
+        dir.y = .0f;
+        transform.position += dir.normalized * Time.deltaTime * speed;
     }
 }

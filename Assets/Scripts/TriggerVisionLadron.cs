@@ -15,10 +15,17 @@ public class TriggerVisionLadron : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         CuerpoScript pleier = other.GetComponent<CuerpoScript>();
-        if (other.CompareTag("Player"))
+        if (pleier != null)
         {
-            ladron.AvoidPlayer();
-            pleier.ActivateNavBlock();
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, other.transform.position - transform.position,out hit))
+            {
+                if (hit.collider.gameObject == pleier.gameObject)
+                {
+                    ladron.AvoidPlayer();
+                    pleier.ActivateNavBlock();
+                }
+            }
         }
     }
 }

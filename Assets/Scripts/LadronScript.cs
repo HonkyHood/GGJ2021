@@ -11,8 +11,12 @@ public class LadronScript : MonoBehaviour
     protected NavMeshAgent agent;
     [SerializeField] protected float speed = 5;
     [SerializeField] protected float speedAvoid = 10;
+    [SerializeField] protected float distanceHear = 10f;
+    [SerializeField] protected GameObject exclamation;
+    [SerializeField] protected GameObject interrogation;
     private List<Monedita> moneditas = new List<Monedita>();
     private int index = 0;
+    private bool checking;
     [SerializeField] private int moneditasToTake = 4;
     //private LadronState state;
     public enum LadronState { Idle, ToGold, Avoiding };
@@ -22,6 +26,45 @@ public class LadronScript : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.speed = speed;
         moneditas.AddRange(GameObject.FindObjectsOfType<Monedita>());
+        GameObject.FindObjectOfType<CuerpoScript>().onChoque += OnChoque;
+    }
+
+    void OnChoque(CuerpoScript s)
+    {
+        if (!checking && Vector3.Distance(s.transform.position,transform.position) <= distanceHear)
+        {
+            AvoidPlayer();
+            //StartCoroutine("SoundCheck", s.transform.position);
+        }
+    }
+
+    IEnumerator SoundCheck (Vector3 origin)
+    {
+        Debug.Log("ASD");
+        checking = true;
+        float t = 0f;
+        agent.speed = 0;
+        agent.isStopped = true;
+        interrogation.gameObject.SetActive(true);
+        while (t < 1)
+        {
+            t += Time.deltaTime / 1f;
+            yield return null;
+        }
+        t = 0;
+        Vector3 dir = origin - transform.position;
+        dir.y = .0f;
+        while (t < 1)
+        {
+            t += Time.deltaTime / 3f;
+            transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(dir), t * 5);
+            yield return null;
+        }
+        interrogation.gameObject.SetActive(false);
+        agent.speed = speed;
+        agent.isStopped = false;
+        checking = false;
+        Debug.Log("END");
     }
 
     private void Start()
@@ -32,6 +75,11 @@ public class LadronScript : MonoBehaviour
     public void AvoidPlayer()
     {
         MoveToGold();
+        StopAllCoroutines();
+        interrogation.gameObject.SetActive(false);
+        exclamation.gameObject.SetActive(true);
+        agent.isStopped = false;
+        checking = false;
         agent.speed = speedAvoid;
         CancelInvoke("ResetSpeed");
         Invoke("ResetSpeed", 1f);
@@ -39,6 +87,7 @@ public class LadronScript : MonoBehaviour
 
     void ResetSpeed()
     {
+        exclamation.gameObject.SetActive(false);
         agent.speed = speed;
     }
 
@@ -54,6 +103,27 @@ public class LadronScript : MonoBehaviour
             return;
         }
         MoveToGold();
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, distanceHear);
+
+        if (true)
+            return;
+
+        if (agent == null)
+            return;
+
+        Gizmos.color = Color.blue;
+        for (int i = 0; i < agent.path.corners.Length-1; i++)
+        {
+            Vector3 startPos = transform.position;
+            if (i > 0)
+                startPos = agent.path.corners[i];
+            Gizmos.DrawLine(startPos, agent.path.corners[i + 1]);
+        }
     }
 
     void MoveToGold()
