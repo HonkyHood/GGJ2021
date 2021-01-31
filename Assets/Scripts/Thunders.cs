@@ -10,6 +10,7 @@ public class Thunders : MonoBehaviour
 
     private void Start()
     {
+        ThunderNow();
         Invoke("ThunderNow", GetRandomRate());
     }
 

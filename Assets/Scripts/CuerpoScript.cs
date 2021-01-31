@@ -30,8 +30,8 @@ public class CuerpoScript : Personaje
     {
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
-        input.x = x;
-        input.z = y;
+        input.x = -x;
+        input.z = -y;
         input.Normalize();
     }
 
