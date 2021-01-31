@@ -31,7 +31,7 @@ public class SpawnInitial : MonoBehaviour
 
     public void SetPosition()
     {
-        //posSelected = RamdomOptions();
+        posSelected = RamdomOptions();
         skeleton.GetComponent<CharacterController>().enabled = false;
         skeleton.position = options[0].pointsSpawns[posSelected].position;
         goblin.position = options[1].pointsSpawns[posSelected].position;
