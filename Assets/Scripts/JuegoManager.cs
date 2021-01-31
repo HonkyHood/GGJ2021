@@ -5,19 +5,33 @@ using UnityEngine.SceneManagement;
 
 public class JuegoManager : MonoBehaviour
 {
-
     [SerializeField] private GameObject gameOverScreen;
     [SerializeField] private GameObject victoryScreen;
     private CuerpoScript s;
     private LadronScript l;
+    private PerseguidorScript p;
 
     private void Awake()
     {
+        LayoutRandomizer.onPostLayout += OnPostLayout;
         s = GameObject.FindObjectOfType<CuerpoScript>();
         l = GameObject.FindObjectOfType<LadronScript>();
+        p = GameObject.FindObjectOfType<PerseguidorScript>();
         s.onDead += OnPlayerDeath;
         s.onCatch += OnCatch;
         l.onTakenCoins += OnTakeCoins;
+    }
+
+    void OnPostLayout()
+    {
+        TeleportCharacters();
+    }
+
+    void TeleportCharacters()
+    {
+        s.transform.position = GameObject.FindWithTag("SpawnPlayer").transform.position;
+        l.transform.position = GameObject.FindWithTag("SpawnLadron").transform.position;
+        p.transform.position = GameObject.FindWithTag("SpawnGhost").transform.position;
     }
 
     void OnPlayerDeath(CuerpoScript s)
