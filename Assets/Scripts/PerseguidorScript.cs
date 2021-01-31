@@ -11,7 +11,7 @@ public class PerseguidorScript : MonoBehaviour
     public delegate void LadronDelegate(LadronScript s);
 
     protected NavMeshAgent agent;
-    [SerializeField] protected float speed = 2.35f;
+    public float speed = 2.35f;
     //private LadronState state;
 
     private void Awake()
@@ -36,6 +36,8 @@ public class PerseguidorScript : MonoBehaviour
 
     private void Update()
     {
+
+
         if (target == null)
             return;
         Vector3 dir = target.transform.position - transform.position;

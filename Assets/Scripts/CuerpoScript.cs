@@ -10,7 +10,7 @@ public class CuerpoScript : Personaje
     public CuerpoDelegate onHit;
     public CuerpoDelegate onCatch;
     public CuerpoDelegate onChoque;
-
+    public GameObject head;
     [SerializeField] private GameObject particlesPrefab;
     [SerializeField] private float health = 12;
     [SerializeField] private float hurtDuration = 0.5f;

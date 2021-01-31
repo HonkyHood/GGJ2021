@@ -35,6 +35,7 @@ public class LadronScript : MonoBehaviour
         GameObject.FindObjectOfType<CuerpoScript>().onChoque += OnChoque;
     }
 
+
     public float Velocity
     {
         get
