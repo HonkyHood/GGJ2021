@@ -16,6 +16,9 @@ public class LadronScript : MonoBehaviour
     [SerializeField] protected GameObject exclamation;
     [SerializeField] protected GameObject interrogation;
     [SerializeField] protected float takeCoinDuration = 1f;
+    [SerializeField] protected AudioClip coinClip;
+    [SerializeField] protected AudioClip haaaClip;
+    protected AudioSource source;
     private List<Monedita> moneditas = new List<Monedita>();
     private int index = 0;
     private bool checking;
@@ -25,6 +28,7 @@ public class LadronScript : MonoBehaviour
 
     private void Awake()
     {
+        source = GetComponent<AudioSource>();
         agent = GetComponent<NavMeshAgent>();
         agent.speed = speed;
         moneditas.AddRange(GameObject.FindObjectsOfType<Monedita>());
@@ -86,6 +90,8 @@ public class LadronScript : MonoBehaviour
     {
         MoveToGold();
         StopAllCoroutines();
+        source.clip = haaaClip;
+        source.Play();
         interrogation.gameObject.SetActive(false);
         exclamation.gameObject.SetActive(true);
         agent.isStopped = false;
@@ -104,6 +110,8 @@ public class LadronScript : MonoBehaviour
     public void TakeCoin(Monedita mon)
     {
         moneditas.Remove(mon);
+        source.clip = coinClip;
+        source.Play();
         Destroy(mon.gameObject);
         moneditasToTake--;
         onCoin?.Invoke(this);

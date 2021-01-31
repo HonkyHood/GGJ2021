@@ -6,6 +6,8 @@ using UnityEngine.AI;
 public class PerseguidorScript : MonoBehaviour
 {
     [SerializeField] private Transform target;
+    [SerializeField] protected AudioClip laughClip;
+    protected AudioSource source;
     public delegate void LadronDelegate(LadronScript s);
 
     protected NavMeshAgent agent;
@@ -14,8 +16,22 @@ public class PerseguidorScript : MonoBehaviour
 
     private void Awake()
     {
+        TriggerHurt hurt = GetComponentInChildren<TriggerHurt>();
+        source = GetComponent<AudioSource>();
+        hurt.onTrigger += OnTrigger;
         agent = GetComponent<NavMeshAgent>();
         agent.speed = speed;
+    }
+
+    private void OnTrigger ()
+    {
+        PlayLaugh();
+    }
+
+    public void PlayLaugh()
+    {
+        source.clip = laughClip;
+        source.Play();
     }
 
     private void Update()

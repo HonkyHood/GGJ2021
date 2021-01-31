@@ -10,7 +10,7 @@ public class Personaje : MonoBehaviour
     protected Vector3 input;
     protected Vector3 delta;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         controller = GetComponent<CharacterController>();
         defSpeed = speed;

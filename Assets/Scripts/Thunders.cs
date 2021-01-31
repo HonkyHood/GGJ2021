@@ -7,9 +7,11 @@ public class Thunders : MonoBehaviour
     [SerializeField] private float thunderRateMin = 15f;
     [SerializeField] private float thunderRateMax = 30f;
     [SerializeField] private GameObject thunderObj;
+    [SerializeField] private AudioSource source;
 
     private void Start()
     {
+        ThunderNow();
         Invoke("ThunderNow", GetRandomRate());
     }
 
@@ -21,6 +23,7 @@ public class Thunders : MonoBehaviour
     void ThunderNow()
     {
         thunderObj.gameObject.SetActive(true);
+        source.Play();
         Invoke("EndThunder",5);
         Invoke("ThunderNow", GetRandomRate());
     }

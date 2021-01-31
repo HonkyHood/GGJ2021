@@ -20,18 +20,28 @@ public class CuerpoScript : Personaje
     [SerializeField] private float debuffRate = 2f;
     [SerializeField] private float choqueSpeed = 1f;
     [SerializeField] private float choqueDuration = 0.5f;
+    [SerializeField] private AudioClip hitWood;
+    [SerializeField] private AudioClip hitConcrete;
+    [SerializeField] private AudioClip hitMetal;
+    private AudioSource source;
     private float choqueCur=0f;
     private float choqueMax=100f;
     private bool chocando;
     private bool hurted = false;
     private bool debuffing;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        source = GetComponent<AudioSource>();
+    }
+
     protected override void GetInput()
     {
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
-        input.x = x;
-        input.z = y;
+        input.x = -x;
+        input.z = -y;
         input.Normalize();
     }
 
@@ -90,6 +100,7 @@ public class CuerpoScript : Personaje
         choqueCur += dmg;
         hurted = true;
         chocando = true;
+        PlayChoqueSound(hit.collider.tag);
         Invoke("HurtBack", hurtDuration);
         Invoke("ChoqueEnd", choqueDuration);
         onChoque?.Invoke(this);
@@ -100,24 +111,41 @@ public class CuerpoScript : Personaje
         }
     }
 
+    void PlayChoqueSound (string tag)
+    {
+        AudioClip clip = hitConcrete;
+        switch (tag)
+        {
+            case "Wood":
+                clip = hitWood;
+                break;
+            case "Metal":
+                clip = hitMetal;
+                break;
+        }
+        source.clip = clip;
+        source.Play();
+    }
+
     void ChoqueEnd()
     {
         chocando = false;
     }
 
-    public void TakeDamage (float dmg, ControllerColliderHit hit=null)
+    public bool TakeDamage (float dmg, ControllerColliderHit hit=null)
     {
         if (hurted)
-            return;
+            return false;
         Instantiate(particlesPrefab, hit!=null ? hit.point : transform.position, Quaternion.identity);
         hurted = true;
         health -= dmg;
         if (health <= 0)
         {
             onDead?.Invoke(this);
-            return;
+            return true;
         }
         Invoke("HurtBack",hurtDuration);
+        return true;
     }
 
     void HurtBack()
